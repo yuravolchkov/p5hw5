@@ -1,79 +1,79 @@
 #include <iostream>
 
+template <class T>
+class RowProxy {
+public:
+	RowProxy(T* row_ptr) : row_ptr_(row_ptr) 
+	{ 
+		row_ptr_ = new T[row_ptr];
+	}
+	T& operator[](size_t index) {
+		//TODO: выбрасывать исключение дл€ некорректной позиции
+		return row_ptr_[index];
+	}
+private:
+	T* row_ptr_=NULL;
+};
+
+
+
 
 template <class T>
-class MyClass
+class Table
 {
 private:
-	int Rows = 1, Cols = 1;
+	size_t RowsMain, ColsMain;
+	T ** Arr;
 public:
-	class AddClass;
-	AddClass* Arr;
-	class AddClass
-	{
-	public:
-		T* AddArr;
-		AddClass() {}
-		AddClass(int size) 
-		{
-			AddArr = new T[size];
-			for (int i = 0; i < size; i++)
-			{
-				AddArr[i] = 0;
-			}
-		}
-		T& operator[] (int AddRows)
-		{
-			return AddArr[AddRows];
-		}
 
-		const T& operator[] (int AddRows) const
-		{
-			return AddArr[AddRows];
-		}
-	};
-
-	MyClass(int InputRows, int InputCols) : Rows(InputRows), Cols(InputCols)
+	Table()
 	{
-		Arr = new AddClass[Rows];
-		for (int i = 0; i < Rows; i++)
+		RowsMain = 0;
+		ColsMain = 0;
+		Arr = NULL;
+	}
+
+	Table(size_t rows, size_t cols) : RowsMain(rows), ColsMain(cols)
+	{ 
+		Arr = new T* [RowsMain];
+		for (int i = 0; i < RowsMain; i++)
 		{
-			Arr[i] = AddClass[Cols];
+			Arr[i] = new T [ColsMain];
 		}
 		std::cout << "done" << std::endl;
 	}
-
-	~MyClass()
+	~Table() 
 	{
-		//for (int i = 0; i < Rows; i++)
-		//{
-	//		delete[] Arr[i];
-		//}
 		delete[] Arr;
 		std::cout << "undone" << std::endl;
 	}
-/*	T& operator[](int FindCol)
-	{	
-		return Arr[FindCol];
-	}
-
-	const T& operator[](int FindCol) const
+	/*
+	T* operator[](int FindCol)
 	{
 		return Arr[FindCol];
 	}
-*/
-	AddClass& operator[](int FindCol)
+	*/
+	//¬озвращаем прокси дл€ строки
+	
+	RowProxy<T> operator[](size_t row)
 	{
-		return Arr[FindCol];
+		//TODO: выбрасывать исключение дл€ некорректной позиции
+		return RowProxy<T>(Arr[row]);
 	}
+	
+	//Table(const Table&) = delete;//запрещаем конструктор копировани€
+	//Table& operator= (const Table&) = delete; //запрещаем оператор присваивани€
 };
+
+
+
 
 
 int main()
 {
-	auto test = MyClass<int>(3, 3);
-	test[0][0] = 5;
-	std::cout << test[0][0];
+	auto test = Table<int>(3, 3);
+	//test[0][0]= 5;
+	//std::cout << test[0][0];
 
 	return 52;
 }
